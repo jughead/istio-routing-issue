@@ -1,0 +1,5 @@
+#!/bin/bash
+
+A_VERSION=1.0.0-rc1
+B_VERSION=1.0.0-rc1
+DOCKERHUB_USERNAME=afedulin

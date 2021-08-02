@@ -1,0 +1,17 @@
+{{- $fullName := include "istio-routing-issue.fullname" . -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "istio-routing-issue.labels" . | nindent 4 }}
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: {{ .Values.service.port }}
+        name: http
+        protocol: HTTP
+      hosts:
+        {{- toYaml .Values.gateway.hosts | nindent 6 }}

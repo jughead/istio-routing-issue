@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "istio-routing-issue.fullname" . }}-b
+  labels:
+    {{- include "istio-routing-issue.labels" . | nindent 4 }}
+    app.kubernetes.io/component: b
+    version: 1.0.0
+    app: b
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: http
+    - port: 3001
+      targetPort: 3001
+      protocol: TCP
+      name: http-api
+  selector:
+    {{- include "istio-routing-issue.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: b
+    version: 1.0.0
+    app: b

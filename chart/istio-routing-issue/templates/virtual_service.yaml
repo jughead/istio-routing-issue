@@ -1,0 +1,52 @@
+{{- $fullName := include "istio-routing-issue.fullname" . -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "istio-routing-issue.labels" . | nindent 4 }}
+    app.kubernetes.io/component: a
+    version: 1.0.0
+    app: a
+spec:
+  hosts:
+    {{- toYaml .Values.gateway.hosts | nindent 4 }}
+  gateways:
+    - {{ .Release.Namespace }}/{{ $fullName }}
+  http:
+    - match:
+      - uri:
+          prefix: /
+      route:
+        - destination:
+            host: {{ $fullName }}-a
+            port:
+              number: {{ .Values.service.port }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ $fullName }}-b
+  labels:
+    {{- include "istio-routing-issue.labels" . | nindent 4 }}
+    app.kubernetes.io/component: b
+    version: 1.0.0
+    app: b
+spec:
+  hosts:
+    - {{ $fullName }}-b
+  gateways:
+    - mesh
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: {{ $fullName }}-b
+            port:
+              number: 3001
+      retries:
+        attempts: 0
+      timeout: 10s
+      
